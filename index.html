@@ -378,17 +378,25 @@ function sprites(){
   const D=dark(),S=Math.ceil(s*1.5*dpr),c=S/2,r=s/2*dpr;
   const mk=()=>{const k=document.createElement('canvas');k.width=k.height=S;return[k,k.getContext('2d')]};
   const[u,g]=mk();
-  g.save();g.filter=`blur(${r*.16}px)`;g.fillStyle=D?'rgba(0,0,0,.55)':'rgba(40,34,24,.16)';g.beginPath();g.ellipse(c+r*.1,c+r*.2,r*.92,r*.88,0,0,7);g.fill();g.restore();
-  const gr=g.createRadialGradient(c-r*.25,c-r*.3,0,c,c,r);
-  if(D){gr.addColorStop(0,'rgba(255,255,255,.10)');gr.addColorStop(.6,'rgba(255,255,255,.04)');gr.addColorStop(.88,'rgba(255,255,255,.12)');gr.addColorStop(1,'rgba(255,255,255,.42)')}
-  else{gr.addColorStop(0,'rgba(255,255,255,.22)');gr.addColorStop(.55,'rgba(255,255,255,.10)');gr.addColorStop(.86,'rgba(228,232,236,.34)');gr.addColorStop(1,'rgba(255,255,255,.7)')}
-  g.fillStyle=gr;g.beginPath();g.arc(c,c,r,0,7);g.fill();
-  g.strokeStyle=D?'rgba(0,0,0,.35)':'rgba(80,84,90,.16)';g.lineWidth=r*.07;g.beginPath();g.arc(c,c,r*.92,0,7);g.stroke();
-  g.strokeStyle=D?'rgba(255,255,255,.45)':'rgba(255,255,255,.8)';g.lineWidth=Math.max(1,dpr);g.beginPath();g.arc(c,c,r*.995,0,7);g.stroke();
-  g.save();g.filter=`blur(${r*.05}px)`;g.lineCap='round';
-  g.strokeStyle=D?'rgba(255,255,255,.28)':'rgba(255,255,255,.5)';g.lineWidth=r*.1;g.beginPath();g.arc(c,c,r*.78,.08*Math.PI,.72*Math.PI);g.stroke();
-  g.strokeStyle=D?'rgba(255,255,255,.7)':'rgba(255,255,255,.92)';g.lineWidth=r*.14;g.beginPath();g.arc(c,c,r*.64,1.06*Math.PI,1.42*Math.PI);g.stroke();g.restore();
-  g.fillStyle='rgba(255,255,255,.9)';g.beginPath();g.ellipse(c+r*.3,c-r*.42,r*.09,r*.06,-.5,0,7);g.fill();
+  const rg=(x,y,r0,r1,stops)=>{const G=g.createRadialGradient(x,y,r0,x,y,r1);stops.forEach(([o,c2])=>G.addColorStop(o,c2));return G};
+  // soft cast shadow, offset away from the light (top-left)
+  g.fillStyle=rg(c+r*.2,c+r*.28,r*.55,r*1.08,[[0,D?'rgba(0,0,0,.30)':'rgba(40,34,24,.13)'],[1,'rgba(0,0,0,0)']]);g.beginPath();g.arc(c+r*.2,c+r*.28,r*1.08,0,7);g.fill();
+  // clear dome: almost transparent centre, slightly denser towards the edge (fresnel)
+  g.fillStyle=rg(c-r*.2,c-r*.25,0,r*1.05,D?[[0,'rgba(255,255,255,.05)'],[.6,'rgba(255,255,255,.035)'],[.9,'rgba(255,255,255,.12)'],[1,'rgba(255,255,255,.26)']]:[[0,'rgba(255,255,255,.16)'],[.6,'rgba(255,255,255,.10)'],[.9,'rgba(255,255,255,.32)'],[1,'rgba(255,255,255,.6)']]);
+  g.beginPath();g.arc(c,c,r,0,7);g.fill();
+  // caustic: light focused through the dome onto the table, lower right inside
+  g.fillStyle=rg(c+r*.3,c+r*.36,0,r*.42,[[0,D?'rgba(255,255,255,.22)':'rgba(255,255,255,.75)'],[.5,D?'rgba(255,255,255,.07)':'rgba(255,255,255,.25)'],[1,'rgba(255,255,255,0)']]);
+  g.beginPath();g.arc(c+r*.3,c+r*.36,r*.42,0,7);g.fill();
+  // refraction band just inside the rim (darker on the light side)
+  g.lineWidth=r*.09;g.strokeStyle=D?'rgba(0,0,0,.28)':'rgba(70,74,82,.10)';g.beginPath();g.arc(c,c,r*.9,.9*Math.PI,1.9*Math.PI);g.stroke();
+  // crisp rim where the film bends into the dome
+  g.lineWidth=Math.max(1,dpr)*1.1;g.strokeStyle=D?'rgba(255,255,255,.5)':'rgba(255,255,255,.95)';g.beginPath();g.arc(c,c,r*.985,0,7);g.stroke();
+  // inner glow along the shadow side of the rim
+  g.lineCap='round';g.lineWidth=r*.07;g.strokeStyle=D?'rgba(255,255,255,.22)':'rgba(255,255,255,.7)';g.beginPath();g.arc(c,c,r*.84,.05*Math.PI,.62*Math.PI);g.stroke();
+  // broad soft window highlight on the flat top, plus a small sharp glint
+  g.save();g.translate(c-r*.3,c-r*.36);g.rotate(-.65);g.scale(1,.5);
+  g.fillStyle=rg(0,0,0,r*.36,[[0,D?'rgba(255,255,255,.55)':'rgba(255,255,255,.95)'],[.6,D?'rgba(255,255,255,.18)':'rgba(255,255,255,.45)'],[1,'rgba(255,255,255,0)']]);g.beginPath();g.arc(0,0,r*.36,0,7);g.fill();g.restore();
+  g.fillStyle='rgba(255,255,255,.95)';g.beginPath();g.ellipse(c-r*.42,c-r*.3,r*.07,r*.045,-.65,0,7);g.fill();
   sp.u=u;sp.p=[];
   const lw=Math.max(1,dpr);
   for(let v=0;v<6;v++){const[p,q]=mk(),pts=[],N=22;
@@ -494,7 +502,7 @@ function render(){
     }
     ctx.restore();ctx.globalAlpha=1;
   }
-  if(conf.length){const steps=Math.min(4,Math.round((now-(render.ct||now))/16.7));render.ct=now;
+  if(conf.length){if(!render.ct)render.ct=now;let steps=Math.floor((now-render.ct)/16.67);if(steps>4){steps=4;render.ct=now}else render.ct+=steps*16.67;
     for(const c of conf){for(let q=0;q<steps;q++){c.vy+=c.vy>0?.06:.16;c.vx*=.982;c.vy*=c.vy>0?.96:.995;c.x+=c.vx+Math.sin(c.ph+=.12)*.6;c.y+=c.vy;c.r+=c.vr;c.life-=.006}
       const co=Math.cos(c.r),si=Math.sin(c.r),sy=Math.cos(c.ph*1.3);ctx.globalAlpha=Math.min(1,c.life*2);ctx.setTransform(dpr*co,dpr*si,-dpr*si*sy,dpr*co*sy,dpr*c.x,dpr*c.y);ctx.fillStyle=c.c;
       if(c.t){ctx.beginPath();ctx.arc(0,0,c.w/2,0,7);ctx.fill()}else ctx.fillRect(-c.w/2,-c.h/2,c.w,c.h)}
