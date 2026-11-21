@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bubble Burst</title>
+<meta name="description" content="Here's a sheet of bubble wrap. You're welcome. Unwrap something lovely and pop every last bubble.">
+<meta property="og:type" content="website"><meta property="og:url" content="https://rupam.work/bubble-burst/">
+<meta property="og:title" content="Here's a sheet of bubble wrap. You're welcome.">
+<meta property="og:description" content="Two calm minutes of unwrapping and popping. No sign-ups, no ads, just pops.">
+<meta property="og:image" content="https://rupam.work/bubble-burst/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Here's a sheet of bubble wrap. You're welcome.">
+<meta name="twitter:description" content="Two calm minutes of unwrapping and popping."><meta name="twitter:image" content="https://rupam.work/bubble-burst/og.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
@@ -74,8 +81,8 @@ body:not(.wrapped) .cap{opacity:0;transform:translateY(8px);pointer-events:none}
 .btn.ghost:hover{background:var(--line)}
 
 
-.picker{position:fixed;z-index:4;inset:64px 0 0;display:grid;place-content:center;justify-items:center;text-align:center;padding:0 16px 90px;transition:opacity .4s}
-.picker h1{margin:0 0 30px;max-width:620px;font-size:clamp(24px,3.4vw,34px);font-weight:500;letter-spacing:-.03em;line-height:1.18;text-wrap:balance}
+.picker{position:fixed;z-index:4;inset:64px 0 0;display:flex;flex-direction:column;align-items:center;text-align:center;padding:12px 16px 120px;overflow-y:auto;transition:opacity .4s}
+.picker h1{margin:auto 0 30px;max-width:620px;font-size:clamp(24px,3.4vw,34px);font-weight:500;letter-spacing:-.03em;line-height:1.18;text-wrap:balance}
 .picker h1 em{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-weight:400;font-size:1.2em;letter-spacing:-.01em;color:light-dark(#7d5cc4,#cbb3ea)}
 .picker>p{margin:6px 0 26px;color:var(--mute)}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,170px));gap:10px}
@@ -90,7 +97,8 @@ body.pick .tile{animation:rise .7s calc(.12s + var(--i)*.07s) cubic-bezier(.2,.8
 @keyframes rise{from{opacity:0;transform:translateY(16px)}}
 body:not(.pick) .picker{opacity:0;pointer-events:none}
 .tile.chosen img{visibility:hidden}
-@media(max-width:600px){.grid{grid-template-columns:repeat(2,minmax(0,160px));gap:4px}.tile{padding:8px 6px 10px}.picker h1{margin-bottom:14px}}
+.grid{margin-bottom:auto}
+@media(max-width:600px){.grid{grid-template-columns:repeat(2,minmax(0,160px));gap:4px}.tile{padding:8px 6px 10px}.picker h1{margin:8px 0 14px;font-size:25px}}
 .wrap-only{display:none}body.wrapped .wrap-only{display:grid}
 .player{position:fixed;z-index:6;left:max(18px,env(safe-area-inset-left));bottom:max(18px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;text-align:left}
 .disc{width:58px;height:58px;border-radius:50%;position:relative;flex:none;
@@ -148,13 +156,17 @@ body.bg-float #bg .floaters{display:block}
 .sw-float{background:radial-gradient(circle at 35% 40%,#fff 0 4px,transparent 9px),radial-gradient(circle at 70% 70%,#fff 0 3px,transparent 7px),#bdb9c9}.sw-plain{background:var(--bg)}
 .sharebox{position:fixed;z-index:20;inset:0;display:grid;place-items:center;padding:16px;background:rgba(10,10,8,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
 .sharebox.on{opacity:1;visibility:visible;transition:opacity .3s}
-.sc{position:relative;width:min(440px,100%);background:var(--card);border-radius:26px;padding:28px 24px 22px;text-align:center;box-shadow:0 30px 70px rgba(0,0,0,.3),0 0 0 1px var(--line);transform:translateY(14px) scale(.97);transition:transform .45s cubic-bezier(.2,.9,.3,1.2)}
+.sc{position:relative;width:min(420px,100%);max-height:calc(100dvh - 32px);overflow-y:auto;background:var(--card);border-radius:26px;padding:16px 16px 18px;text-align:center;box-shadow:0 30px 70px rgba(0,0,0,.3),0 0 0 1px var(--line);transform:translateY(14px) scale(.97);transition:transform .45s cubic-bezier(.2,.9,.3,1.2)}
 .sharebox.on .sc{transform:none}
-.shx{position:absolute;top:10px;right:10px}
+.shx{position:absolute;top:22px;right:22px;z-index:2;background:rgba(20,18,26,.45);color:#fff;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);width:34px;height:34px;border-radius:50%}
+.shprev{display:block;width:100%;height:auto;border-radius:16px;box-shadow:0 0 0 1px var(--line),0 14px 30px rgba(0,0,0,.25);transform:rotate(-1.5deg) translateY(4px);transition:transform .5s cubic-bezier(.2,.9,.3,1.2)}
+.sharebox.on .shprev{transform:none}
+.shrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.shrow .btn{justify-content:center;width:100%;height:48px;font-size:15px;padding:0 12px}
 .shbub{display:flex;justify-content:center;margin-bottom:12px}.shbub i{width:26px;height:26px;border-radius:50%;margin:0 -3px;
   background:radial-gradient(circle at 33% 28%,#fff 0 11%,rgba(255,255,255,.35) 24%,transparent 46%),radial-gradient(circle,transparent 56%,rgba(255,255,255,.55) 78%,rgba(255,255,255,.9) 100%),var(--tint,#cbb3ea);box-shadow:inset -2px -3px 5px rgba(40,20,80,.2),0 3px 6px rgba(0,0,0,.15)}
 .shbub i:nth-child(2){width:34px;height:34px;margin-top:-6px}.shbub i:nth-child(3){width:20px;height:20px;margin-top:8px}
-.sc h3{margin:0;font-size:22px;font-weight:600;letter-spacing:-.025em;line-height:1.2;text-wrap:balance}
+.sc h3{margin:20px 8px 18px;font-size:22px;font-weight:600;letter-spacing:-.025em;line-height:1.2;text-wrap:balance}
 .sc .sub{margin:6px 0 16px;color:var(--mute);font-size:14px}
 .msg{display:flex;gap:6px;align-items:flex-start;text-align:left;padding:14px 10px 14px 16px;border-radius:16px;background:var(--line);margin-bottom:16px}
 .msg p{margin:0;flex:1;font-size:15px;line-height:1.45;min-height:44px}
@@ -247,12 +259,12 @@ body.done .fin>:nth-child(2){transition-delay:.12s}body.done .fin>:nth-child(3){
 <div class="sharebox" id="shareBox" role="dialog" aria-modal="true" aria-labelledby="shTitle">
   <div class="sc">
     <button class="ib shx" id="shClose" aria-label="Close"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-    <div class="shbub"><i></i><i></i><i></i></div>
+    <img class="shprev" src="og.jpg" alt="Link preview: Here's a sheet of bubble wrap. You're welcome." width="1200" height="630">
     <h3 id="shTitle">Know someone who needs two quiet minutes?</h3>
-    <p class="sub">Send them a sheet of bubble wrap. No sign-ups, no ads, just pops.</p>
-    <div class="msg"><p id="shMsg"></p><button class="ib" id="shShuffle" aria-label="Try another line" title="Try another line"><svg class="i" viewBox="0 0 24 24"><path d="m18 14 4 4-4 4"/><path d="m18 2 4 4-4 4"/><path d="M2 18h1.97a4 4 0 0 0 3.3-1.7l5.45-8.6a4 4 0 0 1 3.3-1.7H22"/><path d="M2 6h1.97a4 4 0 0 1 3.3 1.7l.84 1.33"/><path d="M22 18h-6.04a4 4 0 0 1-3.29-1.7l-.84-1.33"/></svg></button></div>
-    <div class="row2"><button class="btn" id="shCopy"><svg class="i" viewBox="0 0 24 24"><rect x="8" y="8" width="14" height="14" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg><span>Copy message</span></button>
-      <a class="btn ghost" id="shX" target="_blank" rel="noopener">Post on X</a><a class="btn ghost" id="shWa" target="_blank" rel="noopener">WhatsApp</a></div>
+    <div class="shrow">
+      <button class="btn" id="shShare"><svg class="i" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="m16 6-4-4-4 4"/><path d="M12 2v13"/></svg><span>Share</span></button>
+      <button class="btn ghost" id="shCopy"><svg class="i" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>Copy link</span></button>
+    </div>
   </div>
 </div>
 <section class="picker" id="picker"><h1>Bring back the <em>little joy</em> of unwrapping a parcel and popping every last bubble.</h1><div class="grid" id="grid"></div></section>
@@ -537,24 +549,17 @@ $('unwrap').addEventListener('click',()=>{if(state!=='wrapped')return;sfx.resume
 $('sound').addEventListener('click',()=>{sfx.resume();const on=sfx.toggle();$('sndIcon').innerHTML=on?ICON_ON:ICON_OFF;$('sound').setAttribute('aria-label',on?'Mute':'Unmute')});
 $('fresh').addEventListener('click',()=>{if(state!=='flat')return;tween(220,k=>sheet.a=1-k,()=>{build();tween(300,k=>sheet.a=k)})});
 $('close').addEventListener('click',()=>{if(state!=='flat')return;grab=null;fold=null;unwrap(-1,()=>{build();$('capSize').textContent=`${ITEMS[cur].label} · ${total} to pop`})});
-const SHARE_URL='https://rupam.work/bubble-burst/';let shI=0;
-const LINES=()=>{const o=ITEMS[cur].name.toLowerCase(),n=total;return[
-  `Here's a sheet of bubble wrap. You're welcome.`,
-  `I just unwrapped a ${o} and popped ${n} bubbles. My shoulders dropped an inch. Your turn.`,
-  `Two quiet minutes and a sheet of bubble wrap. Thought you could use them.`,
-  `Sending you a ${o}, wrapped in bubble wrap. Pop slowly. It helps.`,
-  `Remember how good it felt to pop bubble wrap? It still does.`]};
-function shMsg(){const t=LINES()[shI%5];$('shMsg').textContent=t;const full=t+' '+SHARE_URL;
-  $('shX').href='https://twitter.com/intent/tweet?text='+encodeURIComponent(full);$('shWa').href='https://wa.me/?text='+encodeURIComponent(full)}
-$('calm').addEventListener('click',()=>{shI=1;shMsg();$('shareBox').classList.add('on');$('shCopy').querySelector('span').textContent='Copy message';setTimeout(()=>$('shCopy').focus(),50)});
-$('shShuffle').addEventListener('click',()=>{shI++;shMsg();sfx.resume();sfx.pop(30)});
+const SHARE_URL='https://rupam.work/bubble-burst/';
+$('calm').addEventListener('click',()=>{$('shareBox').classList.add('on');$('shCopy').querySelector('span').textContent='Copy link';setTimeout(()=>$('shShare').focus(),50)});
 const closeShare=()=>$('shareBox').classList.remove('on');
+function copyLink(){const lab=$('shCopy').querySelector('span'),ok=()=>{lab.textContent='Link copied';sfx.resume();sfx.pop(34)};
+  const fb=()=>{const ta=document.createElement('textarea');ta.value=SHARE_URL;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok()}catch(_){lab.textContent='Copy failed'}ta.remove()};
+  try{navigator.clipboard.writeText(SHARE_URL).then(ok,fb)}catch(_){fb()}}
+$('shCopy').addEventListener('click',copyLink);
+$('shShare').addEventListener('click',()=>{if(navigator.share){navigator.share({title:'Bubble Burst',text:"Here's a sheet of bubble wrap. You're welcome.",url:SHARE_URL}).catch(()=>{})}else copyLink()});
 $('shClose').addEventListener('click',closeShare);$('shareBox').addEventListener('click',e=>{if(e.target.id==='shareBox')closeShare()});
 addEventListener('keydown',e=>{if(e.key==='Escape')closeShare()});
-$('shCopy').addEventListener('click',()=>{const t=$('shMsg').textContent+' '+SHARE_URL,lab=$('shCopy').querySelector('span');
-  const ok=()=>{lab.textContent='Copied, now paste it to them';sfx.pop(34)};
-  const fb=()=>{const ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok()}catch(_){lab.textContent='Select and copy the text above'}ta.remove()};
-  try{navigator.clipboard.writeText(t).then(ok,fb)}catch(_){fb()}});
+
 $('next').addEventListener('click',()=>{if(state!=='done')return;
   let i=(cur+1)%ITEMS.length;if(got.size<ITEMS.length)while(got.has(ITEMS[i].id))i=(i+1)%ITEMS.length;
   if(got.size===ITEMS.length){got.clear();save();i=0}
