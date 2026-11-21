@@ -238,7 +238,6 @@ body.done .fin>:nth-child(2){transition-delay:.12s}body.done .fin>:nth-child(3){
   <div class="now" aria-live="polite"><b id="nowName">Mug</b><span id="nowCount"></span></div>
   <div class="spacer"></div>
   <button class="ib wrap-only" id="all" aria-label="All objects" title="All objects"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button>
-  <button class="ib flat-only" id="fresh" aria-label="Fresh sheet" title="Fresh sheet"><svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>
   <button class="ib flat-only" id="close" aria-label="Wrap it back up" title="Wrap it back up"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
   
   <button class="ib" id="sound" aria-label="Mute" title="Sound"><svg class="i" viewBox="0 0 24 24" id="sndIcon"></svg></button>
@@ -552,7 +551,7 @@ $('disc').addEventListener('click',()=>{hideNudge();{const ts=$('toast');if(ts.c
   $('mark').addEventListener('pointerenter',popLogo);$('mark').addEventListener('click',popLogo)}
 $('unwrap').addEventListener('click',()=>{if(state!=='wrapped')return;sfx.resume();unwrap(1)});
 $('sound').addEventListener('click',()=>{sfx.resume();const on=sfx.toggle();$('sndIcon').innerHTML=on?ICON_ON:ICON_OFF;$('sound').setAttribute('aria-label',on?'Mute':'Unmute')});
-$('fresh').addEventListener('click',()=>{if(state!=='flat')return;tween(220,k=>sheet.a=1-k,()=>{build();tween(300,k=>sheet.a=k)})});
+
 $('close').addEventListener('click',()=>{if(state!=='flat')return;grab=null;fold=null;unwrap(-1,()=>{build();$('capSize').textContent=`${ITEMS[cur].label} · ${total} to pop`})});
 const SHARE_URL='https://rupam.work/bubble-burst/';
 $('calm').addEventListener('click',()=>{$('shareBox').classList.add('on');$('shCopy').querySelector('span').textContent='Copy link';setTimeout(()=>$('shShare').focus(),50)});
