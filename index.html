@@ -614,8 +614,8 @@ cur=0;layout();objS.o=0;shelf();setState('pick');render();
   let seen=false;try{seen=localStorage.getItem('bb-intro')==='1';localStorage.setItem('bb-intro','1')}catch(_){}
   if(!rm){body.classList.add('intro');
     const r=h1.getBoundingClientRect(),dy=innerHeight/2-(r.top+r.height/2);h1.style.transform=`translateY(${dy}px)`;
-    const T=seen?{h:120,up:1250,tiles:1500,end:2900}:{bub:150,pop:1150,h:1280,up:2600,tiles:2900,end:4400};
-    if(!seen){setTimeout(()=>bub.classList.add('in'),T.bub);
+    const T=seen?{bub:100,pop:900,h:1020,up:2150,tiles:2400,end:3900}:{bub:150,pop:1150,h:1280,up:2600,tiles:2900,end:4400};
+    {setTimeout(()=>bub.classList.add('in'),T.bub);
       setTimeout(()=>{bub.classList.remove('in');bub.classList.add('pop');const R0=bub.getBoundingClientRect();
         for(let i=0;i<18;i++){const a=i/18*Math.PI*2+rand(-.2,.2),v=rand(2.5,5);parts.push({x:R0.left+38,y:R0.top+38,vx:Math.cos(a)*v,vy:Math.sin(a)*v-1,r:rand(3,7),life:rand(.6,.9)})}dirty()},T.pop)}
     setTimeout(()=>body.classList.add('h1on'),T.h);
