@@ -493,7 +493,6 @@ function poppers(){const C=['#a9c2a2','#f4b8a0','#f2da82','#a9c6ea','#cbb3ea','#
       conf.push({x:ox+side*-rand(0,20),y:oy,vx:Math.cos(a)*v,vy:Math.sin(a)*v,r:rand(0,6),vr:rand(-.25,.25),ph:rand(0,6),w:rand(6,11),h:rand(3,6),t:Math.random()<.25,c:C[(Math.random()*C.length)|0],life:rand(1.6,2.2)})}}
   sfx.pop(70);setTimeout(()=>sfx.pop(64),90);render.ct=performance.now();dirty()}
 function unwrap(dir=1,done){
-  if(dir>0)setTimeout(poppers,260);
   setState('moving');let last=-1;const H0={...hero},P={...ped};
   tween(dir>0?1500:1100,t=>{const k=dir>0?t:1-t;
     objS.rot=k<.18&&dir>0?Math.sin(k*90)*2.4*(1-k/.18):0;
@@ -515,7 +514,7 @@ function finish(){
   $('line').style.width='0';
   const s0={...sheet},o0={...objS};
   tween(650,k=>{const e=out(k);sheet.sc=lerp(s0.sc,.55,e);sheet.rot=s0.rot+.5*e;sheet.cy=s0.cy+50*e;sheet.a=1-k},()=>sheet.a=0);
-  setTimeout(()=>{sfx.win();setState('done');
+  setTimeout(()=>{sfx.win();setState('done');poppers();
     tween(1000,k=>{const e=back(k);objS.x=lerp(o0.x,big.x,out(k));objS.y=lerp(o0.y,big.y,out(k));objS.size=lerp(o0.size,big.size,e);objS.rot=Math.sin(k*Math.PI)*-4});
     setTimeout(()=>{for(let i=0;i<34;i++){const a=rand(0,Math.PI*2),v=rand(3,8);parts.push({x:big.x,y:big.y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-3,r:rand(5,13),life:rand(.8,1.2)})}dirty()},450);
   },300);
