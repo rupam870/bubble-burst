@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bubble Burst</title>
+<link rel="canonical" href="https://rupam.work/bubble-burst/">
 <meta name="description" content="Here's a sheet of bubble wrap. You're welcome. Unwrap something lovely and pop every last bubble.">
 <meta property="og:type" content="website"><meta property="og:url" content="https://rupam.work/bubble-burst/">
 <meta property="og:title" content="Here's a sheet of bubble wrap. You're welcome.">
@@ -255,6 +256,18 @@ body.done .fin>:nth-child(2){transition-delay:.12s}body.done .fin>:nth-child(3){
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 @media(max-width:600px){.now span{display:none}.stats b{font-size:19px}}
 @media(prefers-reduced-motion:reduce){body.wrapped #ob{animation:none}}
+</style>
+<style>
+.rw-by{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:2147483000;font:500 12px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;color:#fff}
+.rw-by summary{list-style:none;cursor:pointer;padding:7px 11px;border-radius:999px;background:rgba(18,18,22,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);opacity:.7;transition:opacity .2s;user-select:none}
+.rw-by summary::-webkit-details-marker{display:none}
+.rw-by summary:hover,.rw-by[open] summary{opacity:1}
+.rw-by div{position:absolute;right:0;bottom:calc(100% + 6px);min-width:170px;padding:6px;border-radius:12px;background:rgba(18,18,22,.86);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.rw-by a{display:block;padding:7px 9px;border-radius:8px;color:#fff;text-decoration:none;white-space:nowrap}
+.rw-by a:hover{background:rgba(255,255,255,.12)}
+.rw-by a.rw-home{opacity:.75}
+.rw-foot{max-width:720px;margin:40px auto 0;padding:24px 16px calc(32px + env(safe-area-inset-bottom,0px));font-size:13px;line-height:1.6;color:inherit;opacity:.7;text-align:center}
+.rw-foot a{color:inherit;text-decoration:underline;text-underline-offset:3px;margin:0 6px;white-space:nowrap}
 </style>
 </head>
 <body class="pick">
@@ -630,5 +643,6 @@ cur=0;layout();objS.o=0;shelf();setState('pick');render();
   }}
 }
 </script>
+<details class="rw-by"><summary>by Rupam</summary><div><a href="https://rupam.work/protein-pan/">Protein Pan</a><a href="https://rupam.work/water-ring-toss/">Water Ring Toss</a><a href="https://rupam.work/corner-florist/">The Corner Florist</a><a href="https://rupam.work/gym/">Home Gym Diorama</a><a class="rw-home" href="https://rupam.work/playground/">Playground</a><a class="rw-home" href="https://rupam.work/">Rupam's portfolio ↗</a></div></details>
 </body>
 </html>
