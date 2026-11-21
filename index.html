@@ -66,6 +66,8 @@ body.done #halo{opacity:.55;transform:scale(1)}
 #ob img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
   filter:drop-shadow(0 20px 22px rgba(30,25,15,.18)) drop-shadow(0 4px 6px rgba(30,25,15,.12))}
 body.wrapped #ob{animation:breathe 4s ease-in-out infinite}
+body.wrapped #ob{pointer-events:auto;cursor:pointer}
+body.wrapped #ob:hover img{filter:drop-shadow(0 26px 26px rgba(30,25,15,.22)) drop-shadow(0 4px 6px rgba(30,25,15,.12)) brightness(1.04)}
 @keyframes breathe{50%{scale:1.012}}
 canvas{position:fixed;inset:0;width:100vw;height:100vh;z-index:2;touch-action:none;pointer-events:none}
 body.flat canvas{pointer-events:auto}
@@ -549,6 +551,7 @@ $('disc').addEventListener('click',()=>{hideNudge();{const ts=$('toast');if(ts.c
 {const bub=$('bub');let busy=false;const popLogo=()=>{if(busy)return;busy=true;sfx.resume();sfx.pop(30);bub.classList.remove('re');bub.classList.add('popped');
   setTimeout(()=>{bub.classList.remove('popped');bub.classList.add('re');setTimeout(()=>{bub.classList.remove('re');busy=false},560)},1300)};
   $('mark').addEventListener('pointerenter',popLogo);$('mark').addEventListener('click',popLogo)}
+ob.addEventListener('click',()=>{if(state!=='wrapped')return;sfx.resume();unwrap(1)});
 $('unwrap').addEventListener('click',()=>{if(state!=='wrapped')return;sfx.resume();unwrap(1)});
 $('sound').addEventListener('click',()=>{sfx.resume();const on=sfx.toggle();$('sndIcon').innerHTML=on?ICON_ON:ICON_OFF;$('sound').setAttribute('aria-label',on?'Mute':'Unmute')});
 
