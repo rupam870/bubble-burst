@@ -52,7 +52,11 @@ body.flat .mark{pointer-events:none}
 @keyframes bring{from{opacity:.9;transform:scale(.6)}to{opacity:0;transform:scale(1.5)}}
 @keyframes binf{from{transform:scale(.55);opacity:.5}}
 .now{opacity:0;display:flex;gap:10px}.now b{font-weight:500}.now span{color:var(--mute);font-variant-numeric:tabular-nums}
-body.flat .mark{opacity:0}body.flat .now{opacity:1}
+body:not(.pick) .mark{opacity:0;pointer-events:none}body:not(.pick) .now{opacity:1}
+.back{position:absolute;left:max(8px,calc(env(safe-area-inset-left) - 8px));opacity:0;pointer-events:none;transition:opacity .35s}
+body:not(.pick) .back{opacity:1;pointer-events:auto}
+.now{left:max(48px,calc(env(safe-area-inset-left) + 32px))!important}
+body:not(.flat) .now span{display:none}
 .spacer{flex:1}
 .ib{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;transition:background .2s,opacity .3s}
 .ib:hover{background:var(--line)}
@@ -60,7 +64,7 @@ body.flat .mark{opacity:0}body.flat .now{opacity:1}
 .line{display:none;position:fixed;z-index:7;top:0;left:0;height:2px;width:0;background:var(--ink);opacity:.75;transition:width .2s}
 
 #halo{position:fixed;z-index:0;border-radius:50%;pointer-events:none;opacity:0;transform:scale(.6);transition:opacity .9s,transform 1.2s cubic-bezier(.2,.8,.2,1);
-  background:radial-gradient(closest-side,var(--tint) 0%,transparent 100%);filter:blur(10px)}
+  background:radial-gradient(closest-side,var(--tint) 0%,color-mix(in srgb,var(--tint) 40%,transparent) 50%,transparent 100%);will-change:opacity,transform}
 body.done #halo{opacity:.55;transform:scale(1)}
 #ob{position:fixed;z-index:1;pointer-events:none;transform-origin:50% 80%}
 #ob img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
@@ -157,10 +161,10 @@ body.bg-haze #bg .haze{display:block}
 @keyframes hz{0%{transform:rotate(0) scale(1)}50%{transform:rotate(6deg) scale(1.08) translate(2%,-2%)}100%{transform:rotate(-4deg) scale(1.03) translate(-2%,2%)}}
 :root[data-theme=dark] #bg{--kro:.55;--blo:.28}
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]) #bg{--kro:.55;--blo:.28}}
-#bg .blobs i{position:absolute;width:60vmax;height:60vmax;border-radius:50%;filter:blur(70px);opacity:var(--blo,.55);animation:drift 26s ease-in-out infinite alternate}
-#bg .blobs i:nth-child(1){background:var(--tint,#cbb3ea);left:-18vmax;top:-20vmax}
-#bg .blobs i:nth-child(2){background:light-dark(#d9ccf6,#5d4f86);right:-22vmax;top:10vmax;animation-duration:32s;animation-delay:-8s}
-#bg .blobs i:nth-child(3){background:light-dark(#f7d6c4,#7a5444);left:15vmax;bottom:-30vmax;animation-duration:38s;animation-delay:-14s}
+#bg .blobs i{position:absolute;width:80vmax;height:80vmax;border-radius:50%;background:radial-gradient(closest-side,var(--c) 0%,color-mix(in srgb,var(--c) 45%,transparent) 45%,transparent 100%)!important;opacity:var(--blo,.55);animation:drift 26s ease-in-out infinite alternate;will-change:transform}
+#bg .blobs i:nth-child(1){--c:var(--tint,#cbb3ea);left:-28vmax;top:-30vmax}
+#bg .blobs i:nth-child(2){--c:light-dark(#d9ccf6,#5d4f86);right:-32vmax;top:0;animation-duration:32s;animation-delay:-8s}
+#bg .blobs i:nth-child(3){--c:light-dark(#f7d6c4,#7a5444);left:5vmax;bottom:-40vmax;animation-duration:38s;animation-delay:-14s}
 @keyframes drift{0%{transform:translate(0,0) scale(1)}50%{transform:translate(8vmax,6vmax) scale(1.12)}100%{transform:translate(-6vmax,10vmax) scale(.92)}}
 body.bg-float #bg .floaters{display:block}
 .fb{position:absolute;bottom:-20vh;border-radius:50%;filter:blur(var(--b));opacity:var(--o);animation:rise2 var(--d) linear var(--dl) infinite;
@@ -256,11 +260,10 @@ body.done .fin>:nth-child(2){transition-delay:.12s}body.done .fin>:nth-child(3){
 <body class="pick">
 <div class="line" id="line"></div>
 <header class="top">
+  <button class="ib back" id="back" aria-label="Back to all objects" title="All objects"><svg class="i" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
   <button class="mark" id="mark" aria-label="Bubble Burst"><i class="bub" id="bub"></i>Bubble Burst</button>
   <div class="now" aria-live="polite"><b id="nowName">Mug</b><span id="nowCount"></span></div>
   <div class="spacer"></div>
-  <button class="ib wrap-only" id="all" aria-label="All objects" title="All objects"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button>
-  <button class="ib flat-only" id="close" aria-label="Wrap it back up" title="Wrap it back up"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
   
   <button class="ib" id="sound" aria-label="Mute" title="Sound"><svg class="i" viewBox="0 0 24 24" id="sndIcon"></svg></button>
 </header>
@@ -471,7 +474,7 @@ function render(){
   if(now-lastPop<220)dirty();
 }
 function tween(dur,fn,done){const t0=performance.now();(function f(){const k=Math.min(1,(performance.now()-t0)/dur);fn(k);render();k<1?requestAnimationFrame(f):done&&done()})()}
-function setState(st){state=st;if(st!=='pick')body.classList.remove('settled');for(const c of['pick','wrapped','flat','done'])body.classList.toggle(c,st===c);cv.style.cursor='default'}
+function setState(st){state=st;if(st==='pick'||st==='wrapped'){conf.length=0;parts.length=0}if(st!=='pick')body.classList.remove('settled');for(const c of['pick','wrapped','flat','done'])body.classList.toggle(c,st===c);cv.style.cursor='default'}
 
 /* ---------- flow ---------- */
 function shelf(){
@@ -489,7 +492,7 @@ function pick(i,animate,from0){
 }
 function poppers(){const C=['#a9c2a2','#f4b8a0','#f2da82','#a9c6ea','#cbb3ea','#f3e8ff','#e09572'];
   for(const side of[-1,1]){const ox=side<0?-10:W+10,oy=H+10;
-    for(let i=0;i<70;i++){const a=-Math.PI/2-side*rand(.18,.62),v=rand(.7,1.12)*Math.sqrt(2*.16*H*.95);
+    for(let i=0,N=W<600?40:70;i<N;i++){const a=-Math.PI/2-side*rand(.18,.62),v=rand(.7,1.12)*Math.sqrt(2*.16*H*.95);
       conf.push({x:ox+side*-rand(0,20),y:oy,vx:Math.cos(a)*v,vy:Math.sin(a)*v,r:rand(0,6),vr:rand(-.25,.25),ph:rand(0,6),w:rand(6,11),h:rand(3,6),t:Math.random()<.25,c:C[(Math.random()*C.length)|0],life:rand(1.6,2.2)})}}
   sfx.pop(70);setTimeout(()=>sfx.pop(64),90);render.ct=performance.now();dirty()}
 function unwrap(dir=1,done){
@@ -564,7 +567,6 @@ $('grid').addEventListener('click',ev=>{const b=ev.target.closest('.tile');if(!b
   const i=[...b.parentNode.children].indexOf(b),r=b.querySelector('img').getBoundingClientRect();b.classList.add('chosen');
   pick(i,true,{x:r.left+r.width/2,y:r.top+r.height/2,size:r.width,g:got.has(ITEMS[i].id)})});
 function toPicker(){shelf();tween(300,k=>{objS.o=1-k;objS.size=lerp(hero.size,hero.size*.9,k)},()=>{setState('pick')})}
-$('all').addEventListener('click',()=>{if(state==='wrapped')toPicker()});
 $('shelf').addEventListener('click',ev=>{if(ev.target.closest('.shgrid')&&state==='done'){toPicker();return}const t=ev.target.closest('i');if(!t||state!=='done')return;const i=[...t.parentNode.children].indexOf(t);
   tween(300,k=>objS.o=1-k,()=>{objS.size=0;pick(i,true)})});
 /* backgrounds */
@@ -586,7 +588,10 @@ ob.addEventListener('click',()=>{if(state!=='wrapped')return;sfx.resume();unwrap
 $('unwrap').addEventListener('click',()=>{if(state!=='wrapped')return;sfx.resume();unwrap(1)});
 $('sound').addEventListener('click',()=>{sfx.resume();const on=sfx.toggle();$('sndIcon').innerHTML=on?ICON_ON:ICON_OFF;$('sound').setAttribute('aria-label',on?'Mute':'Unmute')});
 
-$('close').addEventListener('click',()=>{if(state!=='flat')return;grab=null;fold=null;unwrap(-1,()=>{build();$('capSize').textContent=`${ITEMS[cur].label} · ${total} to pop`})});
+function goBack(){$('toast').classList.remove('on');hideNudge();
+  if(state==='wrapped'||state==='done'){toPicker();return}
+  if(state==='flat'){grab=null;fold=null;setState('moving');tween(320,k=>{sheet.a=1-k;objS.o=1-k},()=>{sheet.a=0;shelf();setState('pick')})}}
+$('back').addEventListener('click',goBack);
 const SHARE_URL='https://rupam.work/bubble-burst/';
 $('calm').addEventListener('click',()=>{$('shareBox').classList.add('on');$('shCopy').querySelector('span').textContent='Copy link';setTimeout(()=>$('shShare').focus(),50)});
 const closeShare=()=>$('shareBox').classList.remove('on');
