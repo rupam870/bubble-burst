@@ -93,7 +93,7 @@ body:not(.wrapped) .cap{opacity:0;transform:translateY(8px);pointer-events:none}
 .tile img{width:min(130px,26vw);aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 12px 14px rgba(20,15,5,.18));transition:transform .4s cubic-bezier(.3,1.5,.5,1)}
 .tile:hover img{transform:scale(1.05) rotate(-2deg)}
 .tile b{font-weight:500;margin-top:6px}.tile span{font-size:13px;color:var(--mute)}
-.tile.got::after{content:"";position:absolute;top:12px;right:12px;width:18px;height:18px;border-radius:50%;background:#3fb27f url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/11px no-repeat}
+.tile.got::after{display:none;content:"";position:absolute;top:12px;right:12px;width:18px;height:18px;border-radius:50%;background:#3fb27f url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/11px no-repeat}
 body.pick .picker>*{animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
 body.pick .tile{animation:rise .7s calc(.12s + var(--i)*.07s) cubic-bezier(.2,.8,.2,1) both}
 @keyframes rise{from{opacity:0;transform:translateY(16px)}}
@@ -449,7 +449,7 @@ function setState(st){state=st;for(const c of['pick','wrapped','flat','done'])bo
 
 /* ---------- flow ---------- */
 function shelf(){
-  $('grid').querySelectorAll('.tile').forEach((b,i)=>b.classList.toggle('got',got.has(ITEMS[i].id)));
+  $('grid').querySelectorAll('.tile').forEach((b,i)=>{const g=got.has(ITEMS[i].id),im=b.querySelector('img'),src=`img/${g?'':'w_'}${ITEMS[i].id}.webp`;b.classList.toggle('got',g);if(!im.src.endsWith(src))im.src=src});
 }
 function pick(i,animate,from0){
   cur=i;const it=ITEMS[i];$('capName').textContent=it.name;$('nowName').textContent=it.name;
@@ -458,8 +458,8 @@ function pick(i,animate,from0){
   sheet.a=0;setState('wrapped');
   const from=from0||{...objS};document.documentElement.style.setProperty('--tint',it.tint);
   if(!animate){Object.assign(objS,{x:hero.x,y:hero.y,size:hero.size,rot:0,w:1,o:1});render();return}
-  objS.w=1;
-  tween(700,k=>{const e=out(k);objS.x=lerp(from.x||hero.x,hero.x,e);objS.y=lerp(from.y||hero.y+40,hero.y,e);objS.size=lerp(from.size||hero.size*.9,hero.size,e);objS.w=1;objS.rot=0;objS.o=from0?1:k},()=>{document.querySelectorAll('.tile.chosen').forEach(t=>t.classList.remove('chosen'))});
+  objS.w=from0&&from0.g?0:1;
+  tween(700,k=>{const e=out(k);objS.x=lerp(from.x||hero.x,hero.x,e);objS.y=lerp(from.y||hero.y+40,hero.y,e);objS.size=lerp(from.size||hero.size*.9,hero.size,e);objS.w=from0&&from0.g?out(k):1;objS.rot=0;objS.o=from0?1:k},()=>{document.querySelectorAll('.tile.chosen').forEach(t=>t.classList.remove('chosen'))});
 }
 function unwrap(dir=1,done){
   setState('moving');let last=-1;const H0={...hero},P={...ped};
@@ -531,7 +531,7 @@ addEventListener('keydown',ev=>{
 $('grid').innerHTML=ITEMS.map((it,i)=>`<button class="tile" style="--i:${i}" aria-label="${it.name}, ${it.label}"><img src="img/w_${it.id}.webp" alt=""><b>${it.name}</b><span>${it.label}</span></button>`).join('');
 $('grid').addEventListener('click',ev=>{const b=ev.target.closest('.tile');if(!b||state!=='pick')return;sfx.resume();
   const i=[...b.parentNode.children].indexOf(b),r=b.querySelector('img').getBoundingClientRect();b.classList.add('chosen');
-  pick(i,true,{x:r.left+r.width/2,y:r.top+r.height/2,size:r.width})});
+  pick(i,true,{x:r.left+r.width/2,y:r.top+r.height/2,size:r.width,g:got.has(ITEMS[i].id)})});
 function toPicker(){shelf();tween(300,k=>{objS.o=1-k;objS.size=lerp(hero.size,hero.size*.9,k)},()=>{setState('pick')})}
 $('all').addEventListener('click',()=>{if(state==='wrapped')toPicker()});
 $('shelf').addEventListener('click',ev=>{if(ev.target.closest('.shgrid')&&state==='done'){toPicker();return}const t=ev.target.closest('i');if(!t||state!=='done')return;const i=[...t.parentNode.children].indexOf(t);
