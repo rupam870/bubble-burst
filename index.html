@@ -112,8 +112,8 @@ body:not(.pick) .picker{opacity:0;pointer-events:none}
 .player.on .arm{transform:rotate(4deg)}
 .player .tx{display:grid;line-height:1.25;margin-left:8px}.player .tx b{font-weight:500;font-size:14px}.player .tx span{font-size:12px;color:var(--mute)}
 @keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:600px){.player{top:calc(env(safe-area-inset-top) + 12px);bottom:auto;left:auto;right:62px;transition:right .3s}
-  body.flat .player{right:154px}
+@media(max-width:600px){.player{top:calc(env(safe-area-inset-top) + 12px);bottom:auto;left:auto;right:max(14px,env(safe-area-inset-right))}
+  .top{padding-right:calc(max(14px,env(safe-area-inset-right)) + 48px)}
   .player .tx{display:none}.disc{width:40px;height:40px}.arm{left:30px;top:-4px;height:24px;width:3px}.arm::before{width:8px;height:8px;left:-2.5px}}
 #bg{--kro:1;--blo:.55;position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 #bg .blobs,#bg .floaters{display:none;position:absolute;inset:0}
@@ -193,7 +193,7 @@ body.bg-float #bg .floaters{display:block}
 @media(max-width:600px){.note{font-size:17px;left:auto;right:20px;bottom:auto;top:calc(env(safe-area-inset-top) + 96px);justify-items:end;text-align:right;transform:translateY(-6px) rotate(1.5deg)}
   .note.on{transform:rotate(1.5deg)}
   .note .lg{display:none}.note .sm{display:inline}
-  .note svg{left:auto;right:150px;bottom:auto;top:-36px;width:34px;height:30px;transform:scaleX(-1) scaleY(-1)}}
+  .note svg{left:auto;right:6px;bottom:auto;top:-34px;width:34px;height:30px;transform:scaleX(-1) scaleY(-1)}}
 .toast{position:fixed;z-index:5;left:50%;top:84px;font-size:15px!important;color:var(--ink)!important;translate:-50% -8px;opacity:0;padding:8px 14px;border-radius:99px;background:var(--glass);
   box-shadow:0 0 0 1px var(--line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-size:13px;color:var(--mute);
   transition:opacity .5s,translate .5s;pointer-events:none;display:flex;align-items:center;gap:12px;max-width:calc(100vw - 24px);width:max-content;padding:6px 6px 6px 16px!important}
@@ -312,8 +312,6 @@ const sfx=(()=>{let ac,mst,nz,on=true;
   function init(){if(ac)return;try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(_){return}
     mst=ac.createGain();mst.gain.value=.9;mst.connect(ac.destination);nz=ac.createBuffer(1,ac.sampleRate*.5,ac.sampleRate);
     const d=nz.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
-  let rv=null;function init2(){if(rv||!ac)return;rv=ac.createConvolver();const L=ac.sampleRate*1.4,ir=ac.createBuffer(2,L,ac.sampleRate);
-    for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<L;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/L,3.2)}rv.buffer=ir;const rg=ac.createGain();rg.gain.value=.5;rv.connect(rg).connect(mst)}
   function burst(t,type,f,q,peak,len,rate=1){const n=ac.createBufferSource();n.buffer=nz;n.playbackRate.value=rate;const fl=ac.createBiquadFilter();
     fl.type=type;fl.frequency.value=f;fl.Q.value=q;const g=ac.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(peak,t+.0015);
     g.gain.exponentialRampToValueAtTime(.0001,t+len);n.connect(fl).connect(g).connect(mst);n.start(t,Math.random()*.4);n.stop(t+len+.02)}
@@ -322,20 +320,10 @@ const sfx=(()=>{let ac,mst,nz,on=true;
   return{
     resume(){init();if(ac&&ac.state==='suspended')ac.resume().catch(()=>{})},
     toggle(){return on=!on},
-    pop(size){if(!on||!ac)return;init2();const t=ac.currentTime,k=clamp((size-36)/32,0,1);
-      const out=ac.createGain();out.gain.value=1;out.connect(mst);const send=ac.createGain();send.gain.value=.22;out.connect(send).connect(rv);
-      const n=ac.createBufferSource();n.buffer=nz;n.playbackRate.value=rand(.9,1.1);const bp=ac.createBiquadFilter();bp.type='bandpass';bp.frequency.value=rand(1300,1800)-k*500;bp.Q.value=.8;
-      const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=3200;const g=ac.createGain();
-      g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.38,t+.002);g.gain.exponentialRampToValueAtTime(.0001,t+.03+k*.02);
-      n.connect(bp).connect(lp).connect(g).connect(out);n.start(t,Math.random()*.4);n.stop(t+.08);
-      const SC=[0,2,4,7,9,12],base=74-k*12,f=440*2**((base+SC[(Math.random()*SC.length)|0]-69)/12)*(1+rand(-.004,.004));
-      const o=ac.createOscillator(),og=ac.createGain();o.type='sine';o.frequency.setValueAtTime(f*.62,t);o.frequency.exponentialRampToValueAtTime(f,t+.022);
-      og.gain.setValueAtTime(.0001,t);og.gain.exponentialRampToValueAtTime(.24,t+.005);og.gain.exponentialRampToValueAtTime(.0001,t+.2+k*.08);o.connect(og).connect(out);o.start(t);o.stop(t+.32);
-      const o2=ac.createOscillator(),g2=ac.createGain();o2.type='triangle';o2.frequency.setValueAtTime(f*2,t);
-      g2.gain.setValueAtTime(.0001,t);g2.gain.exponentialRampToValueAtTime(.035,t+.004);g2.gain.exponentialRampToValueAtTime(.0001,t+.09);o2.connect(g2).connect(out);o2.start(t);o2.stop(t+.12);
-      const th=ac.createOscillator(),tg=ac.createGain();th.frequency.setValueAtTime(150-k*50,t);th.frequency.exponentialRampToValueAtTime(60,t+.05);
-      tg.gain.setValueAtTime(.0001,t);tg.gain.exponentialRampToValueAtTime(.18+k*.12,t+.003);tg.gain.exponentialRampToValueAtTime(.0001,t+.07);th.connect(tg).connect(out);th.start(t);th.stop(t+.1);
-      setTimeout(()=>out.disconnect(),1500)},
+    pop(size){if(!on||!ac)return;const t=ac.currentTime,k=(size-36)/32;
+      burst(t,'bandpass',rand(2300,3100)-k*1200,1.3,.8+k*.2,.035+k*.035,rand(.85,1.15));burst(t,'highpass',5200,.7,.35,.01);
+      const o=ac.createOscillator(),g=ac.createGain();o.frequency.setValueAtTime(rand(170,230)-k*70,t);o.frequency.exponentialRampToValueAtTime(55,t+.05);
+      g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.3+k*.25,t+.002);g.gain.exponentialRampToValueAtTime(.0001,t+.06+k*.03);o.connect(g).connect(mst);o.start(t);o.stop(t+.1)},
     crinkle(a){if(!on||!ac)return;const t=ac.currentTime,n=Math.min(5,1+Math.floor(a*4));
       for(let i=0;i<n;i++)burst(t+Math.random()*.05,Math.random()<.5?'highpass':'bandpass',rand(2500,7000),rand(.6,2),rand(.03,.12)*Math.min(1,.3+a),rand(.006,.02))},
     win(){if(!on||!ac)return;[523.25,659.25,783.99,1046.5].forEach((f,i)=>{tone(f,i*.09,.9,.11,'triangle');tone(f*2,i*.09+.01,.5,.03)});
