@@ -537,7 +537,7 @@ $('unwrap').addEventListener('click',()=>{if(state!=='wrapped')return;sfx.resume
 $('sound').addEventListener('click',()=>{sfx.resume();const on=sfx.toggle();$('sndIcon').innerHTML=on?ICON_ON:ICON_OFF;$('sound').setAttribute('aria-label',on?'Mute':'Unmute')});
 $('fresh').addEventListener('click',()=>{if(state!=='flat')return;tween(220,k=>sheet.a=1-k,()=>{build();tween(300,k=>sheet.a=k)})});
 $('close').addEventListener('click',()=>{if(state!=='flat')return;grab=null;fold=null;unwrap(-1,()=>{build();$('capSize').textContent=`${ITEMS[cur].label} · ${total} to pop`})});
-const SHARE_URL='https://rupam870.github.io/bubble-burst/';let shI=0;
+const SHARE_URL='https://rupam.work/bubble-burst/';let shI=0;
 const LINES=()=>{const o=ITEMS[cur].name.toLowerCase(),n=total;return[
   `Here's a sheet of bubble wrap. You're welcome.`,
   `I just unwrapped a ${o} and popped ${n} bubbles. My shoulders dropped an inch. Your turn.`,
