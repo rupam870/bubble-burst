@@ -95,7 +95,27 @@ body:not(.wrapped) .cap{opacity:0;transform:translateY(8px);pointer-events:none}
 .tile b{font-weight:500;margin-top:6px}.tile span{font-size:13px;color:var(--mute)}
 .tile.got::after{display:none;content:"";position:absolute;top:12px;right:12px;width:18px;height:18px;border-radius:50%;background:#3fb27f url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/11px no-repeat}
 body.pick .picker>*{animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
-body.pick .tile{animation:rise .7s calc(.12s + var(--i)*.07s) cubic-bezier(.2,.8,.2,1) both}
+body.pick .tile{animation:land .75s calc(.1s + var(--i)*.08s) cubic-bezier(.3,1.45,.5,1) both}
+@keyframes land{0%{opacity:0;transform:translateY(-26px) scale(.92)}55%{opacity:1}100%{opacity:1;transform:none}}
+body.intro .picker>*,body.settled .picker>*,body.settled .tile{animation:none}
+body.intro .picker h1{opacity:0;transition:none}
+body.intro .tile{animation:none;opacity:0}
+body.intro.h1on .picker h1{opacity:1;transition:opacity .6s,transform 1s cubic-bezier(.65,0,.25,1)}
+body.intro .picker h1 em{display:inline-block;padding:0 .08em;margin:0 -.08em;clip-path:inset(-20% 100% -20% 0)}
+body.intro.h1on .picker h1 em{animation:write 1s .35s cubic-bezier(.5,0,.3,1) forwards}
+@keyframes write{to{clip-path:inset(-20% -5% -20% 0)}}
+body.intro.tiles .tile{animation:land .75s calc(var(--i)*.09s) cubic-bezier(.3,1.45,.5,1) both}
+#introBub{position:fixed;z-index:8;left:50%;top:50%;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;pointer-events:none;transform:scale(0);
+  background:radial-gradient(circle at 33% 28%,rgba(255,255,255,.98) 0 11%,rgba(255,255,255,.35) 24%,transparent 46%),radial-gradient(circle,transparent 56%,rgba(255,255,255,.55) 78%,rgba(255,255,255,.9) 100%),#cbb3ea;
+  box-shadow:inset -4px -6px 10px rgba(40,20,80,.25),0 10px 24px rgba(30,20,60,.3)}
+#introBub.in{animation:ibIn .7s cubic-bezier(.3,1.6,.5,1) forwards,ibFloat 2s .7s ease-in-out infinite}
+#introBub.pop{animation:ibPop .34s ease-out forwards}
+#introBub.pop::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid #cbb3ea;animation:ibRing .5s ease-out forwards}
+@keyframes ibIn{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes ibFloat{50%{transform:scale(1.04) translateY(-3px)}}
+@keyframes ibPop{0%{transform:scale(1)}30%{transform:scale(1.2,1.12)}100%{transform:scale(1.7);opacity:0}}
+@keyframes ibRing{from{opacity:.9;transform:scale(.8)}to{opacity:0;transform:scale(2.2)}}
+@media(prefers-reduced-motion:reduce){#introBub{display:none}}
 @keyframes rise{from{opacity:0;transform:translateY(16px)}}
 body:not(.pick) .picker{opacity:0;pointer-events:none}
 .tile.chosen img{visibility:hidden}
@@ -273,6 +293,7 @@ body.done .fin>:nth-child(2){transition-delay:.12s}body.done .fin>:nth-child(3){
     </div>
   </div>
 </div>
+<div id="introBub" aria-hidden="true"></div>
 <section class="picker" id="picker"><h1>Bring back the <em>little joy</em> of unwrapping a parcel and popping every last bubble.</h1><div class="grid" id="grid"></div></section>
 <div class="player" id="player"><button class="disc" id="disc" aria-label="Play music" title="Play music"></button><div class="arm"></div><div class="tx"><b>Popping tape</b><span id="discState">Tap the record to play</span></div></div>
 <audio id="music" src="lofi.mp3" loop preload="none"></audio>
@@ -450,7 +471,7 @@ function render(){
   if(now-lastPop<220)dirty();
 }
 function tween(dur,fn,done){const t0=performance.now();(function f(){const k=Math.min(1,(performance.now()-t0)/dur);fn(k);render();k<1?requestAnimationFrame(f):done&&done()})()}
-function setState(st){state=st;for(const c of['pick','wrapped','flat','done'])body.classList.toggle(c,st===c);cv.style.cursor='default'}
+function setState(st){state=st;if(st!=='pick')body.classList.remove('settled');for(const c of['pick','wrapped','flat','done'])body.classList.toggle(c,st===c);cv.style.cursor='default'}
 
 /* ---------- flow ---------- */
 function shelf(){
@@ -589,6 +610,20 @@ new MutationObserver(()=>{sprites();render()}).observe(root,{attributes:true,att
 mq.addEventListener&&mq.addEventListener('change',()=>{sprites();render()});
 ITEMS.forEach(it=>{new Image().src=`img/${it.id}.webp`});
 cur=0;layout();objS.o=0;shelf();setState('pick');render();
+/* opening */
+{const h1=document.querySelector('.picker h1'),bub=$('introBub'),rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let seen=false;try{seen=localStorage.getItem('bb-intro')==='1';localStorage.setItem('bb-intro','1')}catch(_){}
+  if(!rm){body.classList.add('intro');
+    const r=h1.getBoundingClientRect(),dy=innerHeight/2-(r.top+r.height/2);h1.style.transform=`translateY(${dy}px)`;
+    const T=seen?{h:120,up:1250,tiles:1500,end:2900}:{bub:150,pop:1150,h:1280,up:2600,tiles:2900,end:4400};
+    if(!seen){setTimeout(()=>bub.classList.add('in'),T.bub);
+      setTimeout(()=>{bub.classList.remove('in');bub.classList.add('pop');const R0=bub.getBoundingClientRect();
+        for(let i=0;i<18;i++){const a=i/18*Math.PI*2+rand(-.2,.2),v=rand(2.5,5);parts.push({x:R0.left+38,y:R0.top+38,vx:Math.cos(a)*v,vy:Math.sin(a)*v-1,r:rand(3,7),life:rand(.6,.9)})}dirty()},T.pop)}
+    setTimeout(()=>body.classList.add('h1on'),T.h);
+    setTimeout(()=>{h1.style.transform=''},T.up);
+    setTimeout(()=>body.classList.add('tiles'),T.tiles);
+    setTimeout(()=>{body.classList.add('settled');body.classList.remove('intro','h1on','tiles');bub.remove()},T.end);
+  }}
 }
 </script>
 </body>
