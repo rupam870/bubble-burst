@@ -380,9 +380,9 @@ function sprites(){
   sp.us=[];
   for(let vv=0;vv<10;vv++){const[u,g]=mk();
   const rg=(x,y,r0,r1,stops)=>{const G=g.createRadialGradient(x,y,r0,x,y,r1);stops.forEach(([o,c2])=>G.addColorStop(o,c2));return G};
-  const p1=rand(0,7),p2=rand(0,7),a1=rand(.012,.04),a2=rand(.006,.025),N=48;
+  const part=vv>=7,p1=rand(0,7),p2=rand(0,7),a1=part?rand(.008,.016):.003,a2=part?rand(.004,.01):.002,N=48;
   const dome=(k=1)=>{g.beginPath();for(let i=0;i<=N;i++){const th=i/N*Math.PI*2,rr=r*k*(1+a1*Math.sin(2*th+p1)+a2*Math.sin(3*th+p2)),x=c+Math.cos(th)*rr,y=c+Math.sin(th)*rr;i?g.lineTo(x,y):g.moveTo(x,y)}g.closePath()};
-  const fl=Math.random()<.22?rand(.5,.78):rand(.9,1),hx=rand(-.4,-.22),hy=rand(-.44,-.26),hs=rand(.28,.42),ha=rand(-.95,-.4);
+  const fl=part?rand(.45,.65):rand(.95,1),hx=rand(-.33,-.28),hy=rand(-.38,-.33),hs=part?rand(.26,.32):rand(.34,.38),ha=rand(-.7,-.6);
   g.save();g.translate(r*rand(.14,.26),r*rand(.22,.34));g.fillStyle=rg(c,c,r*.55,r*1.08,[[0,D?'rgba(0,0,0,.30)':'rgba(40,34,24,.13)'],[1,'rgba(0,0,0,0)']]);dome(1.08);g.fill();g.restore();
   g.fillStyle=rg(c+hx*r*.5,c+hy*r*.5,0,r*1.05,D?[[0,'rgba(255,255,255,.05)'],[.6,'rgba(255,255,255,.035)'],[.9,`rgba(255,255,255,${.1+.04*fl})`],[1,`rgba(255,255,255,${.2+.08*fl})`]]:[[0,'rgba(255,255,255,.16)'],[.6,'rgba(255,255,255,.10)'],[.9,`rgba(255,255,255,${.26+.08*fl})`],[1,`rgba(255,255,255,${.5+.12*fl})`]]);
   dome();g.fill();
@@ -393,8 +393,8 @@ function sprites(){
   g.lineCap='round';const g0=rand(0,.15);g.lineWidth=r*rand(.05,.08);g.strokeStyle=D?`rgba(255,255,255,${.22*fl})`:`rgba(255,255,255,${.7*fl})`;g.beginPath();g.arc(c,c,r*rand(.8,.87),g0*Math.PI,(g0+rand(.4,.65))*Math.PI);g.stroke();
   g.save();g.translate(c+hx*r,c+hy*r);g.rotate(ha);g.scale(1,rand(.4,.62));
   g.fillStyle=rg(0,0,0,r*hs,[[0,D?`rgba(255,255,255,${.55*fl})`:`rgba(255,255,255,${.95*fl})`],[.6,D?`rgba(255,255,255,${.18*fl})`:`rgba(255,255,255,${.45*fl})`],[1,'rgba(255,255,255,0)']]);g.beginPath();g.arc(0,0,r*hs,0,7);g.fill();g.restore();
-  const gl=Math.random()<.25?2:1;for(let q=0;q<gl;q++){g.fillStyle=`rgba(255,255,255,${(q?.6:.95)*fl})`;g.beginPath();g.ellipse(c+(hx-.12+rand(-.05,.05)+q*.14)*r,c+(hy+.06+rand(-.05,.05)+q*.05)*r,r*rand(.05,.08)*(q?.6:1),r*rand(.03,.05)*(q?.6:1),ha,0,7);g.fill()}
-  if(Math.random()<.35){g.save();dome();g.clip();const t0=rand(0,7);g.beginPath();g.moveTo(c+Math.cos(t0)*r,c+Math.sin(t0)*r);g.quadraticCurveTo(c+rand(-.3,.3)*r,c+rand(-.3,.3)*r,c+Math.cos(t0+rand(2.4,3.6))*r,c+Math.sin(t0+rand(2.4,3.6))*r);
+  const gl=1;for(let q=0;q<gl;q++){g.fillStyle=`rgba(255,255,255,${(q?.6:.95)*fl})`;g.beginPath();g.ellipse(c+(hx-.12+rand(-.05,.05)+q*.14)*r,c+(hy+.06+rand(-.05,.05)+q*.05)*r,r*rand(.05,.08)*(q?.6:1),r*rand(.03,.05)*(q?.6:1),ha,0,7);g.fill()}
+  if(part||Math.random()<.12){g.save();dome();g.clip();const t0=rand(0,7);g.beginPath();g.moveTo(c+Math.cos(t0)*r,c+Math.sin(t0)*r);g.quadraticCurveTo(c+rand(-.3,.3)*r,c+rand(-.3,.3)*r,c+Math.cos(t0+rand(2.4,3.6))*r,c+Math.sin(t0+rand(2.4,3.6))*r);
     g.lineWidth=Math.max(1,dpr);g.strokeStyle=D?'rgba(255,255,255,.16)':'rgba(255,255,255,.7)';g.stroke();g.translate(dpr,dpr);g.strokeStyle=D?'rgba(0,0,0,.25)':'rgba(60,55,45,.08)';g.stroke();g.restore()}
   sp.us.push(u)}
   const u=sp.us[0];
@@ -440,7 +440,7 @@ function build(){
   pitch=s*1.17;rowH=pitch*.866;const iw=sw-2*m,ih=sh-2*m;
   cols=Math.max(2,Math.floor((iw-s-pitch/2)/pitch)+1);rows=Math.max(2,Math.floor((ih-s)/rowH)+1);
   x0=-((cols-1)*pitch+pitch/2)/2;y0=-((rows-1)*rowH)/2;bubbles=[];
-  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const q=Math.random();bubbles.push({x:x0+c*pitch+(r%2?pitch/2:0),y:y0+r*rowH,p:0,t:0,v:(Math.random()*6)|0,vi:(Math.random()*10)|0,sc:rand(.9,1.05),qx:rand(.95,1.05),qy:rand(.93,1.03),ro:rand(-.25,.25),jx:rand(-1,1)*s*.05,jy:rand(-1,1)*s*.05,kind:q<.15?'dud':q<.35?'soft':'pop',vol:rand(.55,1.15)})}
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const q=Math.random();bubbles.push({x:x0+c*pitch+(r%2?pitch/2:0),y:y0+r*rowH,p:0,t:0,v:(Math.random()*6)|0,vi:Math.random()<.18?7+((Math.random()*3)|0):(Math.random()*7)|0,sc:1,qx:1,qy:1,ro:0,jx:0,jy:0,kind:q<.15?'dud':q<.35?'soft':'pop',vol:rand(.55,1.15)})}
   total=bubbles.length;popped=0;started=0;
   for(const b of bubbles){b.uu=(b.x+sw/2)/sw;b.vv=(b.y+sh/2)/sh}
   creases=Array.from({length:4},()=>[rand(0,.35),rand(0,1),rand(.35,.65),rand(0,1),rand(.65,1),rand(0,1)]);
