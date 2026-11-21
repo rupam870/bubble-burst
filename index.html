@@ -377,26 +377,27 @@ const sp={u:null,p:[]};
 function sprites(){
   const D=dark(),S=Math.ceil(s*1.5*dpr),c=S/2,r=s/2*dpr;
   const mk=()=>{const k=document.createElement('canvas');k.width=k.height=S;return[k,k.getContext('2d')]};
-  const[u,g]=mk();
+  sp.us=[];
+  for(let vv=0;vv<10;vv++){const[u,g]=mk();
   const rg=(x,y,r0,r1,stops)=>{const G=g.createRadialGradient(x,y,r0,x,y,r1);stops.forEach(([o,c2])=>G.addColorStop(o,c2));return G};
-  // soft cast shadow, offset away from the light (top-left)
-  g.fillStyle=rg(c+r*.2,c+r*.28,r*.55,r*1.08,[[0,D?'rgba(0,0,0,.30)':'rgba(40,34,24,.13)'],[1,'rgba(0,0,0,0)']]);g.beginPath();g.arc(c+r*.2,c+r*.28,r*1.08,0,7);g.fill();
-  // clear dome: almost transparent centre, slightly denser towards the edge (fresnel)
-  g.fillStyle=rg(c-r*.2,c-r*.25,0,r*1.05,D?[[0,'rgba(255,255,255,.05)'],[.6,'rgba(255,255,255,.035)'],[.9,'rgba(255,255,255,.12)'],[1,'rgba(255,255,255,.26)']]:[[0,'rgba(255,255,255,.16)'],[.6,'rgba(255,255,255,.10)'],[.9,'rgba(255,255,255,.32)'],[1,'rgba(255,255,255,.6)']]);
-  g.beginPath();g.arc(c,c,r,0,7);g.fill();
-  // caustic: light focused through the dome onto the table, lower right inside
-  g.fillStyle=rg(c+r*.3,c+r*.36,0,r*.42,[[0,D?'rgba(255,255,255,.22)':'rgba(255,255,255,.75)'],[.5,D?'rgba(255,255,255,.07)':'rgba(255,255,255,.25)'],[1,'rgba(255,255,255,0)']]);
-  g.beginPath();g.arc(c+r*.3,c+r*.36,r*.42,0,7);g.fill();
-  // refraction band just inside the rim (darker on the light side)
-  g.lineWidth=r*.09;g.strokeStyle=D?'rgba(0,0,0,.28)':'rgba(70,74,82,.10)';g.beginPath();g.arc(c,c,r*.9,.9*Math.PI,1.9*Math.PI);g.stroke();
-  // crisp rim where the film bends into the dome
-  g.lineWidth=Math.max(1,dpr)*1.1;g.strokeStyle=D?'rgba(255,255,255,.5)':'rgba(255,255,255,.95)';g.beginPath();g.arc(c,c,r*.985,0,7);g.stroke();
-  // inner glow along the shadow side of the rim
-  g.lineCap='round';g.lineWidth=r*.07;g.strokeStyle=D?'rgba(255,255,255,.22)':'rgba(255,255,255,.7)';g.beginPath();g.arc(c,c,r*.84,.05*Math.PI,.62*Math.PI);g.stroke();
-  // broad soft window highlight on the flat top, plus a small sharp glint
-  g.save();g.translate(c-r*.3,c-r*.36);g.rotate(-.65);g.scale(1,.5);
-  g.fillStyle=rg(0,0,0,r*.36,[[0,D?'rgba(255,255,255,.55)':'rgba(255,255,255,.95)'],[.6,D?'rgba(255,255,255,.18)':'rgba(255,255,255,.45)'],[1,'rgba(255,255,255,0)']]);g.beginPath();g.arc(0,0,r*.36,0,7);g.fill();g.restore();
-  g.fillStyle='rgba(255,255,255,.95)';g.beginPath();g.ellipse(c-r*.42,c-r*.3,r*.07,r*.045,-.65,0,7);g.fill();
+  const p1=rand(0,7),p2=rand(0,7),a1=rand(.012,.04),a2=rand(.006,.025),N=48;
+  const dome=(k=1)=>{g.beginPath();for(let i=0;i<=N;i++){const th=i/N*Math.PI*2,rr=r*k*(1+a1*Math.sin(2*th+p1)+a2*Math.sin(3*th+p2)),x=c+Math.cos(th)*rr,y=c+Math.sin(th)*rr;i?g.lineTo(x,y):g.moveTo(x,y)}g.closePath()};
+  const fl=Math.random()<.22?rand(.5,.78):rand(.9,1),hx=rand(-.4,-.22),hy=rand(-.44,-.26),hs=rand(.28,.42),ha=rand(-.95,-.4);
+  g.save();g.translate(r*rand(.14,.26),r*rand(.22,.34));g.fillStyle=rg(c,c,r*.55,r*1.08,[[0,D?'rgba(0,0,0,.30)':'rgba(40,34,24,.13)'],[1,'rgba(0,0,0,0)']]);dome(1.08);g.fill();g.restore();
+  g.fillStyle=rg(c+hx*r*.5,c+hy*r*.5,0,r*1.05,D?[[0,'rgba(255,255,255,.05)'],[.6,'rgba(255,255,255,.035)'],[.9,`rgba(255,255,255,${.1+.04*fl})`],[1,`rgba(255,255,255,${.2+.08*fl})`]]:[[0,'rgba(255,255,255,.16)'],[.6,'rgba(255,255,255,.10)'],[.9,`rgba(255,255,255,${.26+.08*fl})`],[1,`rgba(255,255,255,${.5+.12*fl})`]]);
+  dome();g.fill();
+  const cx2=c+r*rand(.2,.38),cy2=c+r*rand(.26,.42),cr=r*rand(.32,.46),ca=rand(.55,1)*fl;
+  g.fillStyle=rg(cx2,cy2,0,cr,[[0,D?`rgba(255,255,255,${.22*ca})`:`rgba(255,255,255,${.75*ca})`],[.5,D?`rgba(255,255,255,${.07*ca})`:`rgba(255,255,255,${.25*ca})`],[1,'rgba(255,255,255,0)']]);g.beginPath();g.arc(cx2,cy2,cr,0,7);g.fill();
+  const b0=rand(.8,1);g.lineWidth=r*rand(.07,.11);g.strokeStyle=D?'rgba(0,0,0,.28)':'rgba(70,74,82,.10)';g.beginPath();g.arc(c,c,r*.9,b0*Math.PI,(b0+rand(.8,1.1))*Math.PI);g.stroke();
+  g.lineWidth=Math.max(1,dpr)*rand(.9,1.3);g.strokeStyle=D?`rgba(255,255,255,${.38+.14*fl})`:`rgba(255,255,255,${.8+.15*fl})`;dome(.985);g.stroke();
+  g.lineCap='round';const g0=rand(0,.15);g.lineWidth=r*rand(.05,.08);g.strokeStyle=D?`rgba(255,255,255,${.22*fl})`:`rgba(255,255,255,${.7*fl})`;g.beginPath();g.arc(c,c,r*rand(.8,.87),g0*Math.PI,(g0+rand(.4,.65))*Math.PI);g.stroke();
+  g.save();g.translate(c+hx*r,c+hy*r);g.rotate(ha);g.scale(1,rand(.4,.62));
+  g.fillStyle=rg(0,0,0,r*hs,[[0,D?`rgba(255,255,255,${.55*fl})`:`rgba(255,255,255,${.95*fl})`],[.6,D?`rgba(255,255,255,${.18*fl})`:`rgba(255,255,255,${.45*fl})`],[1,'rgba(255,255,255,0)']]);g.beginPath();g.arc(0,0,r*hs,0,7);g.fill();g.restore();
+  const gl=Math.random()<.25?2:1;for(let q=0;q<gl;q++){g.fillStyle=`rgba(255,255,255,${(q?.6:.95)*fl})`;g.beginPath();g.ellipse(c+(hx-.12+rand(-.05,.05)+q*.14)*r,c+(hy+.06+rand(-.05,.05)+q*.05)*r,r*rand(.05,.08)*(q?.6:1),r*rand(.03,.05)*(q?.6:1),ha,0,7);g.fill()}
+  if(Math.random()<.35){g.save();dome();g.clip();const t0=rand(0,7);g.beginPath();g.moveTo(c+Math.cos(t0)*r,c+Math.sin(t0)*r);g.quadraticCurveTo(c+rand(-.3,.3)*r,c+rand(-.3,.3)*r,c+Math.cos(t0+rand(2.4,3.6))*r,c+Math.sin(t0+rand(2.4,3.6))*r);
+    g.lineWidth=Math.max(1,dpr);g.strokeStyle=D?'rgba(255,255,255,.16)':'rgba(255,255,255,.7)';g.stroke();g.translate(dpr,dpr);g.strokeStyle=D?'rgba(0,0,0,.25)':'rgba(60,55,45,.08)';g.stroke();g.restore()}
+  sp.us.push(u)}
+  const u=sp.us[0];
   sp.u=u;sp.p=[];
   const lw=Math.max(1,dpr);
   for(let v=0;v<6;v++){const[p,q]=mk(),pts=[],N=22;
@@ -439,7 +440,7 @@ function build(){
   pitch=s*1.17;rowH=pitch*.866;const iw=sw-2*m,ih=sh-2*m;
   cols=Math.max(2,Math.floor((iw-s-pitch/2)/pitch)+1);rows=Math.max(2,Math.floor((ih-s)/rowH)+1);
   x0=-((cols-1)*pitch+pitch/2)/2;y0=-((rows-1)*rowH)/2;bubbles=[];
-  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const q=Math.random();bubbles.push({x:x0+c*pitch+(r%2?pitch/2:0),y:y0+r*rowH,p:0,t:0,v:(Math.random()*6)|0,kind:q<.15?'dud':q<.35?'soft':'pop',vol:rand(.55,1.15)})}
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const q=Math.random();bubbles.push({x:x0+c*pitch+(r%2?pitch/2:0),y:y0+r*rowH,p:0,t:0,v:(Math.random()*6)|0,vi:(Math.random()*10)|0,sc:rand(.9,1.05),qx:rand(.95,1.05),qy:rand(.93,1.03),ro:rand(-.25,.25),jx:rand(-1,1)*s*.05,jy:rand(-1,1)*s*.05,kind:q<.15?'dud':q<.35?'soft':'pop',vol:rand(.55,1.15)})}
   total=bubbles.length;popped=0;started=0;
   for(const b of bubbles){b.uu=(b.x+sw/2)/sw;b.vv=(b.y+sh/2)/sh}
   creases=Array.from({length:4},()=>[rand(0,.35),rand(0,1),rand(.35,.65),rand(0,1),rand(.65,1),rand(0,1)]);
@@ -461,12 +462,13 @@ function half(G,sg){const px=-G.ny,py=G.nx,L=6000,h=new Path2D();
 const reflect=G=>ctx.transform(1-2*G.nx*G.nx,-2*G.nx*G.ny,-2*G.nx*G.ny,1-2*G.ny*G.ny,2*G.k*G.nx,2*G.k*G.ny);
 function face(D,now,back){
   const S=s*1.5,h=S/2;if(back)ctx.globalAlpha*=.6;
+  const dB=(img,b,z)=>{ctx.save();ctx.translate(b.x+(b.jx||0),b.y+(b.jy||0));ctx.rotate(b.ro||0);ctx.scale(z*(b.sc||1)*(b.qx||1),z*(b.sc||1)*(b.qy||1));ctx.drawImage(img,-h,-h,S,S);ctx.restore()};
   for(const b of bubbles){
-    if(!b.p){ctx.drawImage(sp.u,b.x-h,b.y-h,S,S);continue}
+    if(!b.p){dB(sp.us[b.vi||0],b,1);continue}
     const k=(now-b.t)/170;
-    if(k<.35){const z=1-.22*(k/.35);ctx.drawImage(sp.u,b.x-h*z,b.y-h*z,S*z,S*z)}
-    else{const z=k<1?.9+.1*(k-.35)/.65:1;ctx.drawImage(sp.p[b.v],b.x-h*z,b.y-h*z,S*z,S*z);
-      if(b.kind==='dud'){const a0=ctx.globalAlpha;ctx.globalAlpha=a0*.4;const zz=.72;ctx.drawImage(sp.u,b.x-h*zz,b.y-h*zz+s*.05,S*zz,S*zz);ctx.globalAlpha=a0}}
+    if(k<.35){const z=1-.22*(k/.35);dB(sp.us[b.vi||0],b,z)}
+    else{const z=k<1?.9+.1*(k-.35)/.65:1;dB(sp.p[b.v],b,z);
+      if(b.kind==='dud'){const a0=ctx.globalAlpha;ctx.globalAlpha=a0*.4;const zz=.72;dB(sp.us[b.vi||0],{...b,jy:(b.jy||0)+s*.05},zz);ctx.globalAlpha=a0}}
     if(!back&&k<1.9){const e=Math.min(1,k/1.9),a0=ctx.globalAlpha,R0=s/2*(b.kind==='dud'?.8:1)*(1+(b.kind==='dud'?.25:.7)*e);
       ctx.globalAlpha=a0*(1-e)*(b.kind==='dud'?.25:.55);ctx.beginPath();ctx.arc(b.x,b.y,R0,0,7);ctx.strokeStyle='#fff';ctx.lineWidth=1.5*(1-e)+.5;ctx.stroke();ctx.globalAlpha=a0}
   }
